@@ -143,5 +143,22 @@ describe('option', () => {
 
       expect(resultO).toEqual(expectedO);
     });
+
+    it('should catch error in mapper and return none', () => {
+      const valueO = option.create('value');
+      const expectedO = option.none();
+
+      const resultO = pipe(
+        valueO,
+        option.map(() => {
+          throw new Error('an error');
+
+          // eslint-disable-next-line no-unreachable
+          return 'new-value';
+        })
+      );
+
+      expect(resultO).toEqual(expectedO);
+    });
   });
 });

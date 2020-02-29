@@ -57,7 +57,11 @@ const createOptionMonad = (validator: ValueValidator) => {
   const map: map = <A, B, E>(mapper: (value: A) => B) => (
     option: Option<A, E>
   ): Option<B, E> => {
-    return noneChecker(option) || create(mapper((option as Just<A>)._value));
+    try {
+      return noneChecker(option) || create(mapper((option as Just<A>)._value));
+    } catch (e) {
+      return none();
+    }
   };
 
   const defaultOption = {
