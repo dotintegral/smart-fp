@@ -50,6 +50,14 @@ const createOptionMonad = (validator: ValueValidator) => {
     return null;
   };
 
+  const safeCall = <A>(func: () => A | null) => {
+    try {
+      return func();
+    } catch (e) {
+      return null;
+    }
+  };
+
   const create: create = <A, E>(value: A | null | undefined, reason?: E) => {
     return validator(value) ? just(value as A) : none(reason);
   };
@@ -57,11 +65,11 @@ const createOptionMonad = (validator: ValueValidator) => {
   const map: map = <A, B, E>(mapper: (value: A) => B) => (
     option: Option<A, E>
   ): Option<B, E> => {
-    try {
-      return noneChecker(option) || create(mapper((option as Just<A>)._value));
-    } catch (e) {
-      return none();
-    }
+    return (
+      noneChecker(option) ||
+      create(safeCall(() => mapper((option as Just<A>)._value))) ||
+      none()
+    );
   };
 
   const defaultOption = {
