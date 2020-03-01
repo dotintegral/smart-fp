@@ -15,13 +15,17 @@ export interface Just<A> {
 
 export type Option<A, E> = None<E> | Just<A>;
 
-type none = <E>(reason?: E) => None<E>;
-type just = <A>(value: A) => Just<A>;
+type NoneCreator = <E>(reason?: E) => None<E>;
+type JustCreator = <A>(value: A) => Just<A>;
 
-type create = <A, E>(value: A | null | undefined, reason?: E) => Option<A, E>;
+type Create = <A, E>(value: A | null | undefined, reason?: E) => Option<A, E>;
 
-type map = <A, B, E>(
+type Map = <A, B, E>(
   mapper: (value: A) => B
+) => (option: Option<A, E>) => Option<B, E>;
+
+type FlatMap = <A, B, E>(
+  mapper: (value: A) => Option<B, E>
 ) => (option: Option<A, E>) => Option<B, E>;
 
 const defaultValidator: ValueValidator = v => {
@@ -29,12 +33,12 @@ const defaultValidator: ValueValidator = v => {
 };
 
 const createOptionMonad = (validator: ValueValidator) => {
-  const none: none = reason => ({
+  const none: NoneCreator = reason => ({
     _type: 'option',
     _reason: reason || null
   });
 
-  const just: just = value => ({
+  const just: JustCreator = value => ({
     _type: 'option',
     _value: value
   });
@@ -58,11 +62,11 @@ const createOptionMonad = (validator: ValueValidator) => {
     }
   };
 
-  const create: create = <A, E>(value: A | null | undefined, reason?: E) => {
+  const create: Create = <A, E>(value: A | null | undefined, reason?: E) => {
     return validator(value) ? just(value as A) : none(reason);
   };
 
-  const map: map = <A, B, E>(mapper: (value: A) => B) => (
+  const map: Map = <A, B, E>(mapper: (value: A) => B) => (
     option: Option<A, E>
   ): Option<B, E> => {
     return (
@@ -72,16 +76,25 @@ const createOptionMonad = (validator: ValueValidator) => {
     );
   };
 
+  const flatMap: FlatMap = <A, B, E>(mapper: (value: A) => Option<B, E>) => (
+    option: Option<A, E>
+  ): Option<B, E> => {
+    return (
+      noneChecker(option) ||
+      safeCall(() => mapper((option as Just<A>)._value)) ||
+      none()
+    );
+  };
+
   const defaultOption = {
-    // internal implementation
+    // creators
     none,
     just,
-
-    // creators
     create,
 
     // operators
-    map
+    map,
+    flatMap
   };
 
   return defaultOption;
