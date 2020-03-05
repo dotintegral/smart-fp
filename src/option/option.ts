@@ -86,6 +86,24 @@ const createOptionMonad = (validator: ValueValidator) => {
     );
   };
 
+  const ap = <A, B, E>(applicative: Option<(a: A) => B, E>) => (
+    option: Option<A, E>
+  ): Option<B, E> => {
+    return (
+      noneChecker(option) ||
+      noneChecker(applicative) ||
+      create(
+        safeCall(() => {
+          const val = (option as Just<A>)._value;
+          const appl = (applicative as Just<(a: A) => B>)._value;
+
+          return appl(val);
+        })
+      ) ||
+      none()
+    );
+  };
+
   const defaultOption = {
     // creators
     none,
@@ -94,7 +112,8 @@ const createOptionMonad = (validator: ValueValidator) => {
 
     // operators
     map,
-    flatMap
+    flatMap,
+    ap
   };
 
   return defaultOption;
