@@ -4,35 +4,39 @@ export interface ValueValidator {
 }
 
 export interface None<E> {
-  _type: 'option';
-  _reason: E | null;
+  readonly _type: 'option';
+  readonly _reason: E | null;
 }
 
 export interface Just<A> {
-  _type: 'option';
-  _value: A;
+  readonly _type: 'option';
+  readonly _value: A;
 }
 
-export type Option<A, E> = None<E> | Just<A>;
+export type Option<E, A> = None<E> | Just<A>;
 
 type NoneCreator = <E>(reason?: E) => None<E>;
 type JustCreator = <A>(value: A) => Just<A>;
 
-type Create = <A, E>(value: A | null | undefined, reason?: E) => Option<A, E>;
+type Create = <E, A>(value: A | null | undefined, reason?: E) => Option<E, A>;
 
-type Map = <A, B, E>(
+type Map = <E, A, B>(
   mapper: (value: A) => B
-) => (option: Option<A, E>) => Option<B, E>;
+) => (option: Option<E, A>) => Option<E, B>;
 
-type FlatMap = <A, B, E>(
-  mapper: (value: A) => Option<B, E>
-) => (option: Option<A, E>) => Option<B, E>;
+type FlatMap = <E, A, B>(
+  mapper: (value: A) => Option<E, B>
+) => (option: Option<E, A>) => Option<E, B>;
+
+type Ap = <E, A, B>(
+  applicative: Option<E, (a: A) => B>
+) => (option: Option<E, A>) => Option<E, B>;
 
 const defaultValidator: ValueValidator = v => {
   return v !== undefined && v !== null;
 };
 
-const createOptionMonad = (validator: ValueValidator) => {
+export const createOption = (validator: ValueValidator) => {
   const none: NoneCreator = reason => ({
     _type: 'option',
     _reason: reason || null
@@ -43,12 +47,20 @@ const createOptionMonad = (validator: ValueValidator) => {
     _value: value
   });
 
-  const noneChecker = <A, E>(option: Option<A, E>): None<E> | null => {
+  const noneChecker = <E, A>(option: Option<E, A>): None<E> | null => {
     if ('_reason' in option) {
       if (option._reason === null || option._reason === undefined) {
         return none() as None<E>;
       }
       return none(option._reason);
+    }
+
+    return null;
+  };
+
+  const justChecker = <E, A>(option: Option<E, A>): Just<A> | null => {
+    if ('_value' in option) {
+      return option as Just<A>;
     }
 
     return null;
@@ -62,13 +74,13 @@ const createOptionMonad = (validator: ValueValidator) => {
     }
   };
 
-  const create: Create = <A, E>(value: A | null | undefined, reason?: E) => {
+  const create: Create = <E, A>(value: A | null | undefined, reason?: E) => {
     return validator(value) ? just(value as A) : none(reason);
   };
 
-  const map: Map = <A, B, E>(mapper: (value: A) => B) => (
-    option: Option<A, E>
-  ): Option<B, E> => {
+  const map: Map = <E, A, B>(mapper: (value: A) => B) => (
+    option: Option<E, A>
+  ): Option<E, B> => {
     return (
       noneChecker(option) ||
       create(safeCall(() => mapper((option as Just<A>)._value))) ||
@@ -76,9 +88,9 @@ const createOptionMonad = (validator: ValueValidator) => {
     );
   };
 
-  const flatMap: FlatMap = <A, B, E>(mapper: (value: A) => Option<B, E>) => (
-    option: Option<A, E>
-  ): Option<B, E> => {
+  const flatMap: FlatMap = <E, A, B>(mapper: (value: A) => Option<E, B>) => (
+    option: Option<E, A>
+  ): Option<E, B> => {
     return (
       noneChecker(option) ||
       safeCall(() => mapper((option as Just<A>)._value)) ||
@@ -86,20 +98,28 @@ const createOptionMonad = (validator: ValueValidator) => {
     );
   };
 
-  const ap = <A, B, E>(applicative: Option<(a: A) => B, E>) => (
-    option: Option<A, E>
-  ): Option<B, E> => {
+  const ap: Ap = <E, A, B>(applicative: Option<E, (a: A) => B>) => (
+    option: Option<E, A>
+  ): Option<E, B> => {
     return (
       noneChecker(option) ||
       noneChecker(applicative) ||
       create(
-        safeCall(() => {
-          const val = (option as Just<A>)._value;
-          const appl = (applicative as Just<(a: A) => B>)._value;
-
-          return appl(val);
-        })
+        safeCall(() =>
+          (applicative as Just<(a: A) => B>)._value((option as Just<A>)._value)
+        )
       ) ||
+      none()
+    );
+  };
+
+  const alt = <E, A>(alternative: Option<E, A>) => (
+    option: Option<E, A>
+  ): Option<E, A> => {
+    return (
+      justChecker(option) ||
+      justChecker(alternative) ||
+      noneChecker(alternative) ||
       none()
     );
   };
@@ -113,10 +133,11 @@ const createOptionMonad = (validator: ValueValidator) => {
     // operators
     map,
     flatMap,
-    ap
+    ap,
+    alt
   };
 
   return defaultOption;
 };
 
-export default createOptionMonad(defaultValidator);
+export default createOption(defaultValidator);
