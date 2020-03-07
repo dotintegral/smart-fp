@@ -124,6 +124,17 @@ export const createOption = (validator: ValueValidator) => {
     );
   };
 
+  const fold = <E, A, B>(onLeft: (e: E | null) => B, onRight: (a: A) => B) => (
+    option: Option<E, A>
+  ): B => {
+    return (
+      (noneChecker(option) &&
+        safeCall(() => onLeft((option as None<E>)._reason))) ||
+      safeCall(() => onRight((option as Just<A>)._value)) ||
+      onLeft(null)
+    );
+  };
+
   const defaultOption = {
     // creators
     none,
@@ -134,7 +145,8 @@ export const createOption = (validator: ValueValidator) => {
     map,
     flatMap,
     ap,
-    alt
+    alt,
+    fold
   };
 
   return defaultOption;
