@@ -1,84 +1,82 @@
 import option, { None } from './option';
 
-describe('option::creators', () => {
-  describe('just()', () => {
-    it('should return proper structure', () => {
-      const value = { a: 'a' };
-      const testO = option.just(value);
+describe('option.just()', () => {
+  it('should return proper structure', () => {
+    const value = { a: 'a' };
+    const testO = option.just(value);
 
-      const expected = {
-        _type: 'option',
-        _value: value
-      };
+    const expected = {
+      _type: 'option',
+      _value: value
+    };
 
-      expect(testO).toEqual(expected);
-    });
+    expect(testO).toEqual(expected);
+  });
+});
+
+describe('option.none()', () => {
+  it('should return proper structure without a reason', () => {
+    const testO = option.none();
+
+    const expected = {
+      _type: 'option',
+      _reason: null
+    };
+
+    expect(testO).toEqual(expected);
   });
 
-  describe('none()', () => {
-    it('should return proper structure without a reason', () => {
-      const testO = option.none();
+  it('should return proper structure with a valid reason', () => {
+    type Fail = 'fail-a' | 'fail-b';
+    const testO = option.none<Fail>('fail-a');
 
-      const expected = {
-        _type: 'option',
-        _reason: null
-      };
+    const expected = {
+      _type: 'option',
+      _reason: 'fail-a'
+    };
 
-      expect(testO).toEqual(expected);
-    });
+    expect(testO).toEqual(expected);
+  });
+});
 
-    it('should return proper structure with a valid reason', () => {
-      type Fail = 'fail-a' | 'fail-b';
-      const testO = option.none<Fail>('fail-a');
+describe('option.create()', () => {
+  it('should create just when non-nullable value given', () => {
+    const value = { a: 'a' };
+    const testO = option.create(value);
+    const expected = option.just(value);
 
-      const expected = {
-        _type: 'option',
-        _reason: 'fail-a'
-      };
-
-      expect(testO).toEqual(expected);
-    });
+    expect(testO).toEqual(expected);
   });
 
-  describe('create()', () => {
-    it('should create just when non-nullable value given', () => {
-      const value = { a: 'a' };
-      const testO = option.create(value);
-      const expected = option.just(value);
+  it('should create just when empty string given', () => {
+    const value = '';
+    const testO = option.create(value);
+    const expected = option.just(value);
 
-      expect(testO).toEqual(expected);
-    });
+    expect(testO).toEqual(expected);
+  });
 
-    it('should create just when empty string given', () => {
-      const value = '';
-      const testO = option.create(value);
-      const expected = option.just(value);
+  it('should create just when 0 given', () => {
+    const value = 0;
+    const testO = option.create(value);
+    const expected = option.just(value);
 
-      expect(testO).toEqual(expected);
-    });
+    expect(testO).toEqual(expected);
+  });
 
-    it('should create just when 0 given', () => {
-      const value = 0;
-      const testO = option.create(value);
-      const expected = option.just(value);
+  it('should create none when null value given', () => {
+    const value = null;
+    const testO = option.create(value) as None<null>;
+    const expected = option.none();
 
-      expect(testO).toEqual(expected);
-    });
+    expect(testO).toEqual(expected);
+  });
 
-    it('should create none when null value given', () => {
-      const value = null;
-      const testO = option.create(value) as None<null>;
-      const expected = option.none();
+  it('should create none when undefined value given', () => {
+    const value = undefined;
+    const testO = option.create(value) as None<undefined>;
+    const expected = option.none();
 
-      expect(testO).toEqual(expected);
-    });
-
-    it('should create none when undefined value given', () => {
-      const value = undefined;
-      const testO = option.create(value) as None<undefined>;
-      const expected = option.none();
-
-      expect(testO).toEqual(expected);
-    });
+    expect(testO).toEqual(expected);
   });
 });

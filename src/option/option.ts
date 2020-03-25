@@ -128,10 +128,8 @@ export const createOption = (validator: ValueValidator) => {
     option: Option<E, A>
   ): B => {
     return (
-      (noneChecker(option) &&
-        safeCall(() => onLeft((option as None<E>)._reason))) ||
-      safeCall(() => onRight((option as Just<A>)._value)) ||
-      onLeft(null)
+      (noneChecker(option) && onLeft((option as None<E>)._reason)) ||
+      onRight((option as Just<A>)._value)
     );
   };
 
