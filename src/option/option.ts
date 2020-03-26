@@ -124,13 +124,46 @@ export const createOption = (validator: ValueValidator) => {
     );
   };
 
-  const fold = <E, A, B>(onLeft: (e: E | null) => B, onRight: (a: A) => B) => (
-    option: Option<E, A>
-  ): B => {
+  const fold = <E, A, B>(
+    onReason: (e: E | null) => B,
+    onValue: (a: A) => B
+  ) => (option: Option<E, A>): B => {
     return (
-      (noneChecker(option) && onLeft((option as None<E>)._reason)) ||
-      onRight((option as Just<A>)._value)
+      (noneChecker(option) && onReason((option as None<E>)._reason)) ||
+      onValue((option as Just<A>)._value)
     );
+  };
+
+  const bimap = <E1, E2, A, B>(
+    mapLeft: (e: E1 | null) => E2,
+    mapRight: (a: A) => B
+  ) => (option: Option<E1, A>): Option<E2, B> => {
+    if (noneChecker(option)) {
+      return (
+        safeCall(
+          () => none(mapLeft((option as None<E1>)._reason)) as Option<E2, B>
+        ) || none()
+      );
+    }
+
+    return (
+      safeCall(
+        () => create(mapRight((option as Just<A>)._value)) as Option<E2, B>
+      ) || none()
+    );
+  };
+
+  const tap = <E, A>(tappable: (reason: E | null, value: A | null) => void) => (
+    option: Option<E, A>
+  ): Option<E, A> => {
+    safeCall(() =>
+      tappable(
+        (option as None<E>)._reason || null,
+        (option as Just<A>)._value || null
+      )
+    );
+
+    return option;
   };
 
   const defaultOption = {
@@ -144,7 +177,9 @@ export const createOption = (validator: ValueValidator) => {
     flatMap,
     ap,
     alt,
-    fold
+    fold,
+    bimap,
+    tap
   };
 
   return defaultOption;
