@@ -166,6 +166,16 @@ export const createOption = (validator: ValueValidator) => {
     return option;
   };
 
+  const mapReason = <E1, E2, A>(mapper: (reason: E1 | null) => E2) => (
+    option: Option<E1, A>
+  ): Option<E2, A> => {
+    return (
+      justChecker(option) ||
+      safeCall(() => none(mapper((option as None<E1>)._reason))) ||
+      none()
+    );
+  };
+
   const defaultOption = {
     // creators
     none,
@@ -179,7 +189,8 @@ export const createOption = (validator: ValueValidator) => {
     alt,
     fold,
     bimap,
-    tap
+    tap,
+    mapReason
   };
 
   return defaultOption;

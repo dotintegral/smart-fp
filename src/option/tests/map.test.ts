@@ -1,5 +1,5 @@
 import { pipe } from 'fp-ts/lib/pipeable';
-import option from './option';
+import option from '../option';
 
 describe('option.map()', () => {
   it('should map value correctly', () => {

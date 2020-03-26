@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import { pipe } from 'fp-ts/lib/pipeable';
-import option, { Option } from './option';
+import option, { Option } from '../option';
 
 describe('option.alt()', () => {
   it('should do nothing if value is `just`', () => {
