@@ -3,34 +3,25 @@ export interface ValueValidator {
   (v: any): boolean;
 }
 
-export interface None<E> {
+export interface None<Reason> {
   readonly _type: 'option';
-  readonly _reason: E | null;
+  readonly _reason: Reason | null;
 }
 
-export interface Just<A> {
+export interface Some<Value> {
   readonly _type: 'option';
-  readonly _value: A;
+  readonly _value: Value;
 }
 
-export type Option<E, A> = None<E> | Just<A>;
+export type Option<Reason, Value> = None<Reason> | Some<Value>;
 
-type NoneCreator = <E>(reason?: E) => None<E>;
-type JustCreator = <A>(value: A) => Just<A>;
+type NoneCreator = <Reason>(reason?: Reason) => None<Reason>;
+type SomeCreator = <Value>(value: Value) => Some<Value>;
 
-type Create = <E, A>(value: A | null | undefined, reason?: E) => Option<E, A>;
-
-type Map = <E, A, B>(
-  mapper: (value: A) => B
-) => (option: Option<E, A>) => Option<E, B>;
-
-type FlatMap = <E, A, B>(
-  mapper: (value: A) => Option<E, B>
-) => (option: Option<E, A>) => Option<E, B>;
-
-type Ap = <E, A, B>(
-  applicative: Option<E, (a: A) => B>
-) => (option: Option<E, A>) => Option<E, B>;
+type Create = <Reason, Value>(
+  value: Value | null | undefined,
+  reason?: Reason
+) => Option<Reason, Value>;
 
 const defaultValidator: ValueValidator = v => {
   return v !== undefined && v !== null;
@@ -42,15 +33,17 @@ export const createOption = (validator: ValueValidator) => {
     _reason: reason || null
   });
 
-  const just: JustCreator = value => ({
+  const some: SomeCreator = value => ({
     _type: 'option',
     _value: value
   });
 
-  const noneChecker = <E, A>(option: Option<E, A>): None<E> | null => {
+  const noneChecker = <Reason, Value>(
+    option: Option<Reason, Value>
+  ): None<Reason> | null => {
     if ('_reason' in option) {
       if (option._reason === null || option._reason === undefined) {
-        return none() as None<E>;
+        return none() as None<Reason>;
       }
       return none(option._reason);
     }
@@ -58,15 +51,17 @@ export const createOption = (validator: ValueValidator) => {
     return null;
   };
 
-  const justChecker = <E, A>(option: Option<E, A>): Just<A> | null => {
+  const someChecker = <Reason, Value>(
+    option: Option<Reason, Value>
+  ): Some<Value> | null => {
     if ('_value' in option) {
-      return option as Just<A>;
+      return option as Some<Value>;
     }
 
     return null;
   };
 
-  const safeCall = <A>(func: () => A | null) => {
+  const safeCall = <Value>(func: () => Value | null) => {
     try {
       return func();
     } catch (e) {
@@ -74,112 +69,165 @@ export const createOption = (validator: ValueValidator) => {
     }
   };
 
-  const create: Create = <E, A>(value: A | null | undefined, reason?: E) => {
-    return validator(value) ? just(value as A) : none(reason);
+  const create: Create = <Reason, Value>(
+    value: Value | null | undefined,
+    reason?: Reason
+  ) => {
+    return validator(value) ? some(value as Value) : none(reason);
   };
 
-  const map: Map = <E, A, B>(mapper: (value: A) => B) => (
-    option: Option<E, A>
-  ): Option<E, B> => {
+  const map = <Reason, Value1, Value2>(mapper: (value: Value1) => Value2) => (
+    option: Option<Reason, Value1>
+  ): Option<Reason, Value2> => {
     return (
       noneChecker(option) ||
-      create(safeCall(() => mapper((option as Just<A>)._value))) ||
+      create(safeCall(() => mapper((option as Some<Value1>)._value))) ||
       none()
     );
   };
 
-  const flatMap: FlatMap = <E, A, B>(mapper: (value: A) => Option<E, B>) => (
-    option: Option<E, A>
-  ): Option<E, B> => {
+  const flatMap = <Reason, Value1, Value2>(
+    mapper: (value: Value1) => Option<Reason, Value2>
+  ) => (option: Option<Reason, Value1>): Option<Reason, Value2> => {
     return (
       noneChecker(option) ||
-      safeCall(() => mapper((option as Just<A>)._value)) ||
+      safeCall(() => mapper((option as Some<Value1>)._value)) ||
       none()
     );
   };
 
-  const ap: Ap = <E, A, B>(applicative: Option<E, (a: A) => B>) => (
-    option: Option<E, A>
-  ): Option<E, B> => {
+  const ap = <Reason, Value1, Value2>(
+    applicative: Option<Reason, (a: Value1) => Value2>
+  ) => (option: Option<Reason, Value1>): Option<Reason, Value2> => {
     return (
       noneChecker(option) ||
       noneChecker(applicative) ||
       create(
         safeCall(() =>
-          (applicative as Just<(a: A) => B>)._value((option as Just<A>)._value)
+          (applicative as Some<(a: Value1) => Value2>)._value(
+            (option as Some<Value1>)._value
+          )
         )
       ) ||
       none()
     );
   };
 
-  const alt = <E, A>(alternative: Option<E, A>) => (
-    option: Option<E, A>
-  ): Option<E, A> => {
+  const alt = <Reason, Value>(alternative: Option<Reason, Value>) => (
+    option: Option<Reason, Value>
+  ): Option<Reason, Value> => {
     return (
-      justChecker(option) ||
-      justChecker(alternative) ||
+      someChecker(option) ||
+      someChecker(alternative) ||
       noneChecker(alternative) ||
       none()
     );
   };
 
-  const fold = <E, A, B>(
-    onReason: (e: E | null) => B,
-    onValue: (a: A) => B
-  ) => (option: Option<E, A>): B => {
+  const fold = <Reason, Value1, Value2>(
+    onReason: (e: Reason | null) => Value2,
+    onValue: (a: Value1) => Value2
+  ) => (option: Option<Reason, Value1>): Value2 => {
     return (
-      (noneChecker(option) && onReason((option as None<E>)._reason)) ||
-      onValue((option as Just<A>)._value)
+      (noneChecker(option) && onReason((option as None<Reason>)._reason)) ||
+      onValue((option as Some<Value1>)._value)
     );
   };
 
-  const bimap = <E1, E2, A, B>(
-    mapLeft: (e: E1 | null) => E2,
-    mapRight: (a: A) => B
-  ) => (option: Option<E1, A>): Option<E2, B> => {
+  const bimap = <Reason1, Reason2, Value1, Value2>(
+    mapReason: (e: Reason1 | null) => Reason2,
+    mapValue: (a: Value1) => Value2
+  ) => (option: Option<Reason1, Value1>): Option<Reason2, Value2> => {
     if (noneChecker(option)) {
       return (
         safeCall(
-          () => none(mapLeft((option as None<E1>)._reason)) as Option<E2, B>
+          () =>
+            none(mapReason((option as None<Reason1>)._reason)) as Option<
+              Reason2,
+              Value2
+            >
         ) || none()
       );
     }
 
     return (
       safeCall(
-        () => create(mapRight((option as Just<A>)._value)) as Option<E2, B>
+        () =>
+          create(mapValue((option as Some<Value1>)._value)) as Option<
+            Reason2,
+            Value2
+          >
       ) || none()
     );
   };
 
-  const tap = <E, A>(tappable: (reason: E | null, value: A | null) => void) => (
-    option: Option<E, A>
-  ): Option<E, A> => {
-    safeCall(() =>
-      tappable(
-        (option as None<E>)._reason || null,
-        (option as Just<A>)._value || null
-      )
+  const mapReason = <Reason1, Reason2, Value>(
+    mapper: (reason: Reason1 | null) => Reason2
+  ) => (option: Option<Reason1, Value>): Option<Reason2, Value> => {
+    return (
+      someChecker(option) ||
+      safeCall(() => none(mapper((option as None<Reason1>)._reason))) ||
+      none()
     );
+  };
+
+  const filter = <Reason, Value>(
+    checker: (v: Value) => boolean,
+    reason?: Reason
+  ) => (option: Option<Reason, Value>): Option<Reason, Value> => {
+    return noneChecker(option) ||
+      safeCall(() => checker((option as Some<Value>)._value))
+      ? option
+      : none(reason);
+  };
+
+  const tap = <Reason, Value>(tappable: (value: Value) => void) => (
+    option: Option<Reason, Value>
+  ): Option<Reason, Value> => {
+    if (someChecker(option)) {
+      safeCall(() => tappable((option as Some<Value>)._value));
+    }
 
     return option;
   };
 
-  const mapReason = <E1, E2, A>(mapper: (reason: E1 | null) => E2) => (
-    option: Option<E1, A>
-  ): Option<E2, A> => {
+  const bitap = <Reason, Value>(
+    tapReason: (reason: Reason | null) => void,
+    tapValue: (value: Value) => void
+  ) => (option: Option<Reason, Value>): Option<Reason, Value> => {
+    if (someChecker(option)) {
+      safeCall(() => tapValue((option as Some<Value>)._value));
+    } else {
+      safeCall(() => tapReason((option as None<Reason>)._reason));
+    }
+
+    return option;
+  };
+
+  const tapReason = <Reason, Value>(
+    tappable: (reason: Reason | null) => void
+  ) => (option: Option<Reason, Value>): Option<Reason, Value> => {
+    if (noneChecker(option)) {
+      safeCall(() => tappable((option as None<Reason>)._reason));
+    }
+
+    return option;
+  };
+
+  const flatten = <Reason, Value>() => (
+    nestedOption: Option<Reason, Option<Reason, Value>>
+  ): Option<Reason, Value> => {
     return (
-      justChecker(option) ||
-      safeCall(() => none(mapper((option as None<E1>)._reason))) ||
-      none()
+      noneChecker(nestedOption) ||
+      noneChecker((nestedOption as Some<Option<Reason, Value>>)._value) ||
+      ((nestedOption as Some<Option<Reason, Value>>)._value as Some<Value>)
     );
   };
 
   const defaultOption = {
     // creators
     none,
-    just,
+    some,
     create,
 
     // operators
@@ -189,8 +237,12 @@ export const createOption = (validator: ValueValidator) => {
     alt,
     fold,
     bimap,
+    mapReason,
+    filter,
     tap,
-    mapReason
+    bitap,
+    tapReason,
+    flatten
   };
 
   return defaultOption;

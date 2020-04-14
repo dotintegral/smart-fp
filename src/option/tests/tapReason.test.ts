@@ -8,7 +8,7 @@ describe('option.tap()', () => {
 
     const resultO = pipe(
       valueO,
-      option.tap(() => {})
+      option.tapReason(() => {})
     );
 
     expect(resultO).toEqual(expectedO);
@@ -20,40 +20,49 @@ describe('option.tap()', () => {
 
     const resultO = pipe(
       valueO,
-      option.tap(() => {})
+      option.tapReason(() => {})
     );
 
     expect(resultO).toEqual(expectedO);
   });
 
-  it('should give correct value to tappable function when tapping over some', () => {
-    const valueO = option.create(7);
-    const tappable = jest.fn();
-
-    pipe(valueO, option.tap(tappable));
-
-    expect(tappable).toBeCalledWith(7);
-  });
-
-  it('should not be called when tapping over none', () => {
+  it('should give correct reason to tappable function when tapping over none', () => {
     const valueO = option.create(null, 'reason');
     const tappable = jest.fn();
 
-    pipe(valueO, option.tap(tappable));
+    pipe(valueO, option.tapReason(tappable));
+
+    expect(tappable).toBeCalledWith('reason');
+  });
+
+  it('should give correct nullish reason to tappable function when tapping over none w/o reason', () => {
+    const valueO = option.create(null);
+    const tappable = jest.fn();
+
+    pipe(valueO, option.tapReason(tappable));
+
+    expect(tappable).toBeCalledWith(null);
+  });
+
+  it('should not be called when tapping over some', () => {
+    const valueO = option.create('value');
+    const tappable = jest.fn();
+
+    pipe(valueO, option.tapReason(tappable));
 
     expect(tappable).not.toBeCalled();
   });
 
   it('should catch an error and allow the pipe to continue', () => {
-    const valueO = option.create(2);
-    const expectedO = option.create(4);
+    const valueO = option.create(null, 'reason');
+    const expectedO = option.create(null, 'reason');
 
     const resultO = pipe(
       valueO,
-      option.tap(() => {
+      option.tapReason(() => {
         throw new Error('some error');
       }),
-      option.map(v => v * 2)
+      option.map(() => 'some value')
     );
 
     expect(resultO).toEqual(expectedO);

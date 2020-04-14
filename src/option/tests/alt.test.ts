@@ -3,7 +3,7 @@ import { pipe } from 'fp-ts/lib/pipeable';
 import option, { Option } from '../option';
 
 describe('option.alt()', () => {
-  it('should do nothing if value is `just`', () => {
+  it('should do nothing if value is `some`', () => {
     const valueO = option.create(2);
     const alternativeO = option.create(4);
     const expectedO = option.create(2);
@@ -13,7 +13,7 @@ describe('option.alt()', () => {
     expect(resultO).toEqual(expectedO);
   });
 
-  it('should return alternative if value is `none` and alternative is `just`', () => {
+  it('should return alternative if value is `none` and alternative is `some`', () => {
     const valueO = option.none() as Option<never, number>;
     const alternativeO = option.create(4);
     const expectedO = option.create(4);

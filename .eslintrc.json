@@ -27,7 +27,7 @@
     ],
     "import/extensions": 0,
     "no-underscore-dangle": 0,
-    "@typescript-eslint/indent": [2, 2],
+    "@typescript-eslint/indent": [0, 2],
     "@typescript-eslint/explicit-function-return-type": 0,
     "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/no-empty-function": 0

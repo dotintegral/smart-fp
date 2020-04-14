@@ -1,9 +1,9 @@
 import option, { None } from '../option';
 
-describe('option.just()', () => {
+describe('option.some()', () => {
   it('should return proper structure', () => {
     const value = { a: 'a' };
-    const testO = option.just(value);
+    const testO = option.some(value);
 
     const expected = {
       _type: 'option',
@@ -40,26 +40,26 @@ describe('option.none()', () => {
 });
 
 describe('option.create()', () => {
-  it('should create just when non-nullable value given', () => {
+  it('should create some when non-nullable value given', () => {
     const value = { a: 'a' };
     const testO = option.create(value);
-    const expected = option.just(value);
+    const expected = option.some(value);
 
     expect(testO).toEqual(expected);
   });
 
-  it('should create just when empty string given', () => {
+  it('should create some when empty string given', () => {
     const value = '';
     const testO = option.create(value);
-    const expected = option.just(value);
+    const expected = option.some(value);
 
     expect(testO).toEqual(expected);
   });
 
-  it('should create just when 0 given', () => {
+  it('should create some when 0 given', () => {
     const value = 0;
     const testO = option.create(value);
-    const expected = option.just(value);
+    const expected = option.some(value);
 
     expect(testO).toEqual(expected);
   });
