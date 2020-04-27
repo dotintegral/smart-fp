@@ -28,6 +28,7 @@ const defaultValidator: ValueValidator = v => {
 };
 
 export const createOption = (validator: ValueValidator) => {
+  // -- HELPERS --
   const none: NoneCreator = reason => ({
     _type: 'option',
     _reason: reason || null
@@ -69,6 +70,13 @@ export const createOption = (validator: ValueValidator) => {
     }
   };
 
+  const getReason = <Reason, Value>(option: Option<Reason, Value>) =>
+    (option as None<Reason>)._reason;
+
+  const getValue = <Reason, Value>(option: Option<Reason, Value>) =>
+    (option as Some<Value>)._value;
+
+  // -- API --
   const create: Create = <Reason, Value>(
     value: Value | null | undefined,
     reason?: Reason
@@ -81,7 +89,7 @@ export const createOption = (validator: ValueValidator) => {
   ): Option<Reason, Value2> => {
     return (
       noneChecker(option) ||
-      create(safeCall(() => mapper((option as Some<Value1>)._value))) ||
+      create(safeCall(() => mapper(getValue(option)))) ||
       none()
     );
   };
@@ -90,9 +98,7 @@ export const createOption = (validator: ValueValidator) => {
     mapper: (value: Value1) => Option<Reason, Value2>
   ) => (option: Option<Reason, Value1>): Option<Reason, Value2> => {
     return (
-      noneChecker(option) ||
-      safeCall(() => mapper((option as Some<Value1>)._value)) ||
-      none()
+      noneChecker(option) || safeCall(() => mapper(getValue(option))) || none()
     );
   };
 
@@ -102,13 +108,7 @@ export const createOption = (validator: ValueValidator) => {
     return (
       noneChecker(option) ||
       noneChecker(applicative) ||
-      create(
-        safeCall(() =>
-          (applicative as Some<(a: Value1) => Value2>)._value(
-            (option as Some<Value1>)._value
-          )
-        )
-      ) ||
+      create(safeCall(() => getValue(applicative)(getValue(option)))) ||
       none()
     );
   };
@@ -129,8 +129,8 @@ export const createOption = (validator: ValueValidator) => {
     onValue: (a: Value1) => Value2
   ) => (option: Option<Reason, Value1>): Value2 => {
     return (
-      (noneChecker(option) && onReason((option as None<Reason>)._reason)) ||
-      onValue((option as Some<Value1>)._value)
+      (noneChecker(option) && onReason(getReason(option))) ||
+      onValue(getValue(option))
     );
   };
 
@@ -141,22 +141,14 @@ export const createOption = (validator: ValueValidator) => {
     if (noneChecker(option)) {
       return (
         safeCall(
-          () =>
-            none(mapReason((option as None<Reason1>)._reason)) as Option<
-              Reason2,
-              Value2
-            >
+          () => none(mapReason(getReason(option))) as Option<Reason2, Value2>
         ) || none()
       );
     }
 
     return (
       safeCall(
-        () =>
-          create(mapValue((option as Some<Value1>)._value)) as Option<
-            Reason2,
-            Value2
-          >
+        () => create(mapValue(getValue(option))) as Option<Reason2, Value2>
       ) || none()
     );
   };
@@ -166,7 +158,7 @@ export const createOption = (validator: ValueValidator) => {
   ) => (option: Option<Reason1, Value>): Option<Reason2, Value> => {
     return (
       someChecker(option) ||
-      safeCall(() => none(mapper((option as None<Reason1>)._reason))) ||
+      safeCall(() => none(mapper(getReason(option)))) ||
       none()
     );
   };
@@ -175,8 +167,7 @@ export const createOption = (validator: ValueValidator) => {
     checker: (v: Value) => boolean,
     reason?: Reason
   ) => (option: Option<Reason, Value>): Option<Reason, Value> => {
-    return noneChecker(option) ||
-      safeCall(() => checker((option as Some<Value>)._value))
+    return noneChecker(option) || safeCall(() => checker(getValue(option)))
       ? option
       : none(reason);
   };
@@ -185,7 +176,7 @@ export const createOption = (validator: ValueValidator) => {
     option: Option<Reason, Value>
   ): Option<Reason, Value> => {
     if (someChecker(option)) {
-      safeCall(() => tappable((option as Some<Value>)._value));
+      safeCall(() => tappable(getValue(option)));
     }
 
     return option;
@@ -196,9 +187,9 @@ export const createOption = (validator: ValueValidator) => {
     tapValue: (value: Value) => void
   ) => (option: Option<Reason, Value>): Option<Reason, Value> => {
     if (someChecker(option)) {
-      safeCall(() => tapValue((option as Some<Value>)._value));
+      safeCall(() => tapValue(getValue(option)));
     } else {
-      safeCall(() => tapReason((option as None<Reason>)._reason));
+      safeCall(() => tapReason(getReason(option)));
     }
 
     return option;
@@ -208,7 +199,7 @@ export const createOption = (validator: ValueValidator) => {
     tappable: (reason: Reason | null) => void
   ) => (option: Option<Reason, Value>): Option<Reason, Value> => {
     if (noneChecker(option)) {
-      safeCall(() => tappable((option as None<Reason>)._reason));
+      safeCall(() => tappable(getReason(option)));
     }
 
     return option;
@@ -219,8 +210,8 @@ export const createOption = (validator: ValueValidator) => {
   ): Option<Reason, Value> => {
     return (
       noneChecker(nestedOption) ||
-      noneChecker((nestedOption as Some<Option<Reason, Value>>)._value) ||
-      ((nestedOption as Some<Option<Reason, Value>>)._value as Some<Value>)
+      noneChecker(getValue(nestedOption)) ||
+      (getValue(nestedOption) as Some<Value>)
     );
   };
 
