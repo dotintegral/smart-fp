@@ -10,10 +10,7 @@ export const getFold = ({
   getReason,
   getValue
 }: Helpers): Fold => {
-  const fold: Fold = <Reason, Value1, Result>(
-    onReason: (e: Reason | null) => Result,
-    onValue: (a: Value1) => Result
-  ) => (option: Option<Reason, Value1>): Result => {
+  const fold: Fold = (onReason, onValue) => option => {
     return (
       (noneChecker(option) && onReason(getReason(option))) ||
       onValue(getValue(option))

@@ -11,9 +11,7 @@ export const getAp = ({
   none,
   create
 }: Helpers): Ap => {
-  const ap: Ap = <Reason, Value1, Value2>(
-    applicative: Option<Reason, (a: Value1) => Value2>
-  ) => (option: Option<Reason, Value1>): Option<Reason, Value2> => {
+  const ap: Ap = applicative => option => {
     return (
       noneChecker(option) ||
       noneChecker(applicative) ||
