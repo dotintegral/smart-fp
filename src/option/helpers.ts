@@ -47,6 +47,7 @@ export interface Helpers {
   safeCall: SafeCall;
   getReason: GetReason;
   getValue: GetValue;
+  create: Create;
 }
 
 export const getHelpers = (validator: ValueValidator): Helpers => {
@@ -97,6 +98,13 @@ export const getHelpers = (validator: ValueValidator): Helpers => {
   const getValue: GetValue = <Reason, Value>(option: Option<Reason, Value>) =>
     (option as Some<Value>)._value;
 
+  const create: Create = <Reason, Value>(
+    value: Value | null | undefined,
+    reason?: Reason
+  ) => {
+    return validator(value) ? some(value as Value) : none(reason);
+  };
+
   return {
     none,
     some,
@@ -105,6 +113,7 @@ export const getHelpers = (validator: ValueValidator): Helpers => {
     validator,
     safeCall,
     getReason,
-    getValue
+    getValue,
+    create
   };
 };
