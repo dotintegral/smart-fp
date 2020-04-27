@@ -4,6 +4,8 @@ import { getFlatMap } from './operators/flatMap';
 import { getAp } from './operators/ap';
 import { getAlt } from './operators/alt';
 import { getFold } from './operators/fold';
+import { getBimap } from './operators/bimap';
+import { getMapReason } from './operators/mapReason';
 
 /* eslint-disable no-underscore-dangle */
 export interface ValueValidator {
@@ -23,12 +25,6 @@ export interface Some<Value> {
 export type Option<Reason, Value> = None<Reason> | Some<Value>;
 
 type NoneCreator = <Reason>(reason?: Reason) => None<Reason>;
-type SomeCreator = <Value>(value: Value) => Some<Value>;
-
-type Create = <Reason, Value>(
-  value: Value | null | undefined,
-  reason?: Reason
-) => Option<Reason, Value>;
 
 const defaultValidator: ValueValidator = v => {
   return v !== undefined && v !== null;
@@ -39,11 +35,6 @@ export const createOption = (validator: ValueValidator) => {
   const none: NoneCreator = reason => ({
     _type: 'option',
     _reason: reason || null
-  });
-
-  const some: SomeCreator = value => ({
-    _type: 'option',
-    _value: value
   });
 
   const noneChecker = <Reason, Value>(
@@ -84,41 +75,6 @@ export const createOption = (validator: ValueValidator) => {
     (option as Some<Value>)._value;
 
   // -- API --
-  const create: Create = <Reason, Value>(
-    value: Value | null | undefined,
-    reason?: Reason
-  ) => {
-    return validator(value) ? some(value as Value) : none(reason);
-  };
-
-  const bimap = <Reason1, Reason2, Value1, Value2>(
-    mapReason: (e: Reason1 | null) => Reason2,
-    mapValue: (a: Value1) => Value2
-  ) => (option: Option<Reason1, Value1>): Option<Reason2, Value2> => {
-    if (noneChecker(option)) {
-      return (
-        safeCall(
-          () => none(mapReason(getReason(option))) as Option<Reason2, Value2>
-        ) || none()
-      );
-    }
-
-    return (
-      safeCall(
-        () => create(mapValue(getValue(option))) as Option<Reason2, Value2>
-      ) || none()
-    );
-  };
-
-  const mapReason = <Reason1, Reason2, Value>(
-    mapper: (reason: Reason1 | null) => Reason2
-  ) => (option: Option<Reason1, Value>): Option<Reason2, Value> => {
-    return (
-      someChecker(option) ||
-      safeCall(() => none(mapper(getReason(option)))) ||
-      none()
-    );
-  };
 
   const filter = <Reason, Value>(
     checker: (v: Value) => boolean,
@@ -176,9 +132,9 @@ export const createOption = (validator: ValueValidator) => {
 
   const defaultOption = {
     // creators
-    none,
-    some,
-    create,
+    none: helpers.none,
+    some: helpers.some,
+    create: helpers.create,
 
     // operators
     map: getMap(helpers),
@@ -186,8 +142,8 @@ export const createOption = (validator: ValueValidator) => {
     ap: getAp(helpers),
     alt: getAlt(helpers),
     fold: getFold(helpers),
-    bimap,
-    mapReason,
+    bimap: getBimap(helpers),
+    mapReason: getMapReason(helpers),
     filter,
     tap,
     bitap,
