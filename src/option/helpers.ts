@@ -50,6 +50,10 @@ export interface Helpers {
   create: Create;
 }
 
+export const defaultValidator: ValueValidator = v => {
+  return v !== undefined && v !== null;
+};
+
 export const getHelpers = (validator: ValueValidator): Helpers => {
   const none: NoneCreator = reason => ({
     _type: 'option',

@@ -1,4 +1,4 @@
-import option, { None } from '../option';
+import option, { None } from './option';
 
 describe('option.some()', () => {
   it('should return proper structure', () => {
