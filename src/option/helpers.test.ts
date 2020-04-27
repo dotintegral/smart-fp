@@ -80,3 +80,31 @@ describe('option.create()', () => {
     expect(testO).toEqual(expected);
   });
 });
+
+describe('option.isSome()', () => {
+  it('should return true if some given', () => {
+    const value = option.create('some value', 'reason');
+
+    expect(option.isSome(value)).toBeTruthy();
+  });
+
+  it('should return false if none given', () => {
+    const value = option.create(null, 'reason');
+
+    expect(option.isSome(value)).toBeFalsy();
+  });
+});
+
+describe('option.isNone()', () => {
+  it('should return false if some given', () => {
+    const value = option.create('some value', 'reason');
+
+    expect(option.isNone(value)).toBeFalsy();
+  });
+
+  it('should return true if none given', () => {
+    const value = option.create(null, 'reason');
+
+    expect(option.isNone(value)).toBeTruthy();
+  });
+});
