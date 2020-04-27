@@ -1,5 +1,6 @@
 import { getMap } from './operators/map';
 import { getHelpers } from './helpers';
+import { getFlatMap } from './operators/flatMap';
 
 /* eslint-disable no-underscore-dangle */
 export interface ValueValidator {
@@ -85,14 +86,6 @@ export const createOption = (validator: ValueValidator) => {
     reason?: Reason
   ) => {
     return validator(value) ? some(value as Value) : none(reason);
-  };
-
-  const flatMap = <Reason, Value1, Value2>(
-    mapper: (value: Value1) => Option<Reason, Value2>
-  ) => (option: Option<Reason, Value1>): Option<Reason, Value2> => {
-    return (
-      noneChecker(option) || safeCall(() => mapper(getValue(option))) || none()
-    );
   };
 
   const ap = <Reason, Value1, Value2>(
@@ -208,6 +201,8 @@ export const createOption = (validator: ValueValidator) => {
     );
   };
 
+  const helpers = getHelpers(validator);
+
   const defaultOption = {
     // creators
     none,
@@ -215,8 +210,8 @@ export const createOption = (validator: ValueValidator) => {
     create,
 
     // operators
-    map: getMap(getHelpers(validator)),
-    flatMap,
+    map: getMap(helpers),
+    flatMap: getFlatMap(helpers),
     ap,
     alt,
     fold,
