@@ -1,6 +1,9 @@
 import { getMap } from './operators/map';
 import { getHelpers } from './helpers';
 import { getFlatMap } from './operators/flatMap';
+import { getAp } from './operators/ap';
+import { getAlt } from './operators/alt';
+import { getFold } from './operators/fold';
 
 /* eslint-disable no-underscore-dangle */
 export interface ValueValidator {
@@ -86,38 +89,6 @@ export const createOption = (validator: ValueValidator) => {
     reason?: Reason
   ) => {
     return validator(value) ? some(value as Value) : none(reason);
-  };
-
-  const ap = <Reason, Value1, Value2>(
-    applicative: Option<Reason, (a: Value1) => Value2>
-  ) => (option: Option<Reason, Value1>): Option<Reason, Value2> => {
-    return (
-      noneChecker(option) ||
-      noneChecker(applicative) ||
-      create(safeCall(() => getValue(applicative)(getValue(option)))) ||
-      none()
-    );
-  };
-
-  const alt = <Reason, Value>(alternative: Option<Reason, Value>) => (
-    option: Option<Reason, Value>
-  ): Option<Reason, Value> => {
-    return (
-      someChecker(option) ||
-      someChecker(alternative) ||
-      noneChecker(alternative) ||
-      none()
-    );
-  };
-
-  const fold = <Reason, Value1, Value2>(
-    onReason: (e: Reason | null) => Value2,
-    onValue: (a: Value1) => Value2
-  ) => (option: Option<Reason, Value1>): Value2 => {
-    return (
-      (noneChecker(option) && onReason(getReason(option))) ||
-      onValue(getValue(option))
-    );
   };
 
   const bimap = <Reason1, Reason2, Value1, Value2>(
@@ -212,9 +183,9 @@ export const createOption = (validator: ValueValidator) => {
     // operators
     map: getMap(helpers),
     flatMap: getFlatMap(helpers),
-    ap,
-    alt,
-    fold,
+    ap: getAp(helpers),
+    alt: getAlt(helpers),
+    fold: getFold(helpers),
     bimap,
     mapReason,
     filter,
