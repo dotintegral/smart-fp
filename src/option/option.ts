@@ -23,6 +23,10 @@ export const createOption = (validator: ValueValidator) => {
     some: helpers.some,
     create: helpers.create,
 
+    // helpers
+    isSome: helpers.isSome,
+    isNone: helpers.isNone,
+
     // operators
     map: getMap(helpers),
     flatMap: getFlatMap(helpers),

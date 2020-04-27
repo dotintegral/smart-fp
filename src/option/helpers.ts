@@ -38,6 +38,14 @@ export type Create = <Reason, Value>(
   reason?: Reason
 ) => Option<Reason, Value>;
 
+export type IsSome = <Reason, Value>(
+  option: Option<Reason, Value>
+) => option is Some<Value>;
+
+export type IsNone = <Reason, Value>(
+  option: Option<Reason, Value>
+) => option is None<Reason>;
+
 export interface Helpers {
   none: NoneCreator;
   some: SomeCreator;
@@ -48,6 +56,8 @@ export interface Helpers {
   getReason: GetReason;
   getValue: GetValue;
   create: Create;
+  isSome: IsSome;
+  isNone: IsNone;
 }
 
 export const defaultValidator: ValueValidator = v => {
@@ -109,6 +119,18 @@ export const getHelpers = (validator: ValueValidator): Helpers => {
     return validator(value) ? some(value as Value) : none(reason);
   };
 
+  const isSome = <Reason, Value>(
+    option: Option<Reason, Value>
+  ): option is Some<Value> => {
+    return '_value' in option;
+  };
+
+  const isNone = <Reason, Value>(
+    option: Option<Reason, Value>
+  ): option is None<Reason> => {
+    return '_reason' in option;
+  };
+
   return {
     none,
     some,
@@ -118,6 +140,8 @@ export const getHelpers = (validator: ValueValidator): Helpers => {
     safeCall,
     getReason,
     getValue,
-    create
+    create,
+    isSome,
+    isNone
   };
 };
