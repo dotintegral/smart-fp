@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
-import { pipe } from 'fp-ts/lib/pipeable';
 import option from '../option';
+import { pipe } from '../../pipe/pipe';
 
 describe('option.ap()', () => {
   it('should apply function correctly', () => {

@@ -1,4 +1,4 @@
-import { pipe } from 'fp-ts/lib/pipeable';
+import { pipe } from '../../pipe/pipe';
 import option from '../option';
 
 describe('option.filter()', () => {
