@@ -9,9 +9,9 @@ export const getMap = ({
   safeCall,
   getValue,
   none,
-  create
+  create,
 }: Helpers): Map => {
-  const map: Map = mapper => option => {
+  const map: Map = (mapper) => (option) => {
     return (
       noneChecker(option) ||
       create(safeCall(() => mapper(getValue(option)))) ||

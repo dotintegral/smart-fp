@@ -9,9 +9,9 @@ export const getAp = ({
   safeCall,
   getValue,
   none,
-  create
+  create,
 }: Helpers): Ap => {
-  const ap: Ap = applicative => option => {
+  const ap: Ap = (applicative) => (option) => {
     return (
       noneChecker(option) ||
       noneChecker(applicative) ||

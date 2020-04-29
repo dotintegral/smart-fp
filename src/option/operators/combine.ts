@@ -39,7 +39,7 @@ export const getCombine = ({
   none,
   some,
   getValue,
-  getReason
+  getReason,
 }: Helpers): Combine => {
   const combine: Combine = <R1, V1, R2, V2, R3, V3, R4, V4, R5, V5, R6, V6>(
     o1: Option<R1, V1>,
@@ -116,7 +116,7 @@ export const getCombine = ({
         getValue(o2),
         getValue(o3),
         getValue(o4),
-        getValue(o5)
+        getValue(o5),
       ]);
     }
 
@@ -144,7 +144,7 @@ export const getCombine = ({
       getValue(o3),
       getValue(o4),
       getValue(o5),
-      getValue(o6)
+      getValue(o6),
     ]);
   };
 

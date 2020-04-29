@@ -7,7 +7,7 @@ describe('option.some()', () => {
 
     const expected = {
       _type: 'option',
-      _value: value
+      _value: value,
     };
 
     expect(testO).toEqual(expected);
@@ -20,7 +20,7 @@ describe('option.none()', () => {
 
     const expected = {
       _type: 'option',
-      _reason: null
+      _reason: null,
     };
 
     expect(testO).toEqual(expected);
@@ -32,7 +32,7 @@ describe('option.none()', () => {
 
     const expected = {
       _type: 'option',
-      _reason: 'fail-a'
+      _reason: 'fail-a',
     };
 
     expect(testO).toEqual(expected);

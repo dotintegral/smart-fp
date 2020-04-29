@@ -11,7 +11,7 @@ describe('option.fold()', () => {
       valueO,
       option.fold(
         () => 'none',
-        v => v
+        (v) => v
       )
     );
 
@@ -26,7 +26,7 @@ describe('option.fold()', () => {
       valueO,
       option.fold(
         () => 'none',
-        v => v
+        (v) => v
       )
     );
 
@@ -41,7 +41,7 @@ describe('option.fold()', () => {
     const result = pipe(
       valueO,
       option.fold(
-        r => r,
+        (r) => r,
         () => 'non-empty'
       )
     );

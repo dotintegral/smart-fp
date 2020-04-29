@@ -9,9 +9,9 @@ export const getFilter = ({
   noneChecker,
   safeCall,
   none,
-  getValue
+  getValue,
 }: Helpers): Filter => {
-  const filter: Filter = (checker, reason?) => option => {
+  const filter: Filter = (checker, reason?) => (option) => {
     return noneChecker(option) || safeCall(() => checker(getValue(option)))
       ? option
       : none(reason);

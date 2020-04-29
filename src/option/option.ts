@@ -41,7 +41,7 @@ export const createOption = (validator: ValueValidator) => {
     bitap: getBitap(helpers),
     tapReason: getTapReason(helpers),
     flatten: getFlatten(helpers),
-    combine: getCombine(helpers)
+    combine: getCombine(helpers),
   };
 
   return defaultOption;

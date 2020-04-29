@@ -8,9 +8,9 @@ export const getMapReason = ({
   someChecker,
   safeCall,
   none,
-  getReason
+  getReason,
 }: Helpers): MapReason => {
-  const mapReason: MapReason = mapper => option => {
+  const mapReason: MapReason = (mapper) => (option) => {
     return (
       someChecker(option) ||
       safeCall(() => none(mapper(getReason(option)))) ||

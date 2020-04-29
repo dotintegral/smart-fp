@@ -8,7 +8,7 @@ describe('option.mapReason()', () => {
 
     const resultO = pipe(
       valueO,
-      option.mapReason(reason => `new ${reason}`)
+      option.mapReason((reason) => `new ${reason}`)
     );
 
     expect(resultO).toEqual(expectedO);
@@ -20,7 +20,7 @@ describe('option.mapReason()', () => {
 
     const resultO = pipe(
       valueO,
-      option.mapReason(reason => `new ${reason}`)
+      option.mapReason((reason) => `new ${reason}`)
     );
 
     expect(resultO).toEqual(expectedO);

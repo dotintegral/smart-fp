@@ -8,7 +8,7 @@ describe('option.map()', () => {
 
     const resultO = pipe(
       valueO,
-      option.map(x => x * 2)
+      option.map((x) => x * 2)
     );
 
     expect(resultO).toEqual(expectedO);

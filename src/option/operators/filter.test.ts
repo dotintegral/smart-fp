@@ -8,7 +8,7 @@ describe('option.filter()', () => {
 
     const resultO = pipe(
       valueO,
-      option.filter(x => x > 1)
+      option.filter((x) => x > 1)
     );
 
     expect(resultO).toEqual(expectedO);
@@ -20,7 +20,7 @@ describe('option.filter()', () => {
 
     const resultO = pipe(
       valueO,
-      option.filter(x => x < 1)
+      option.filter((x) => x < 1)
     );
 
     expect(resultO).toEqual(expectedO);
@@ -32,7 +32,7 @@ describe('option.filter()', () => {
 
     const resultO = pipe(
       valueO,
-      option.filter(x => x < 1, 'new reason')
+      option.filter((x) => x < 1, 'new reason')
     );
 
     expect(resultO).toEqual(expectedO);
@@ -44,7 +44,7 @@ describe('option.filter()', () => {
 
     const resultO = pipe(
       valueO,
-      option.filter(x => x < 1)
+      option.filter((x) => x < 1)
     );
 
     expect(resultO).toEqual(expectedO);

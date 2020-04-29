@@ -79,7 +79,7 @@ describe('option.bitap()', () => {
           throw new Error('some error');
         }
       ),
-      option.map(v => v * 2)
+      option.map((v) => v * 2)
     );
 
     expect(resultO).toEqual(expectedO);

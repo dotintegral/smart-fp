@@ -8,9 +8,9 @@ export const getFlatMap = ({
   noneChecker,
   safeCall,
   getValue,
-  none
+  none,
 }: Helpers): FlatMap => {
-  const flatMap: FlatMap = mapper => option => {
+  const flatMap: FlatMap = (mapper) => (option) => {
     return (
       noneChecker(option) || safeCall(() => mapper(getValue(option))) || none()
     );

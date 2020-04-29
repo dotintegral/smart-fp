@@ -53,7 +53,7 @@ describe('option.tap()', () => {
       option.tap(() => {
         throw new Error('some error');
       }),
-      option.map(v => v * 2)
+      option.map((v) => v * 2)
     );
 
     expect(resultO).toEqual(expectedO);

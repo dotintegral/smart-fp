@@ -7,9 +7,9 @@ export type TapReason = <Reason, Value>(
 export const getTapReason = ({
   noneChecker,
   safeCall,
-  getReason
+  getReason,
 }: Helpers): TapReason => {
-  const tapReason: TapReason = tappable => option => {
+  const tapReason: TapReason = (tappable) => (option) => {
     if (noneChecker(option)) {
       safeCall(() => tappable(getReason(option)));
     }

@@ -11,9 +11,9 @@ export const getBimap = ({
   getValue,
   none,
   create,
-  getReason
+  getReason,
 }: Helpers): Bimap => {
-  const bimap: Bimap = (mapReason, mapValue) => option => {
+  const bimap: Bimap = (mapReason, mapValue) => (option) => {
     if (noneChecker(option)) {
       return safeCall(() => none(mapReason(getReason(option)))) || none();
     }

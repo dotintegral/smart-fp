@@ -8,7 +8,7 @@ describe('option.flatMap()', () => {
 
     const resultO = pipe(
       valueO,
-      option.flatMap(x => option.create(x * 2))
+      option.flatMap((x) => option.create(x * 2))
     );
 
     expect(resultO).toEqual(expectedO);

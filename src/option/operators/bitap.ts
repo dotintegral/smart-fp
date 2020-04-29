@@ -9,9 +9,9 @@ export const getBitap = ({
   someChecker,
   safeCall,
   getValue,
-  getReason
+  getReason,
 }: Helpers): Bitap => {
-  const bitap: Bitap = (tapReason, tapValue) => option => {
+  const bitap: Bitap = (tapReason, tapValue) => (option) => {
     if (someChecker(option)) {
       safeCall(() => tapValue(getValue(option)));
     } else {

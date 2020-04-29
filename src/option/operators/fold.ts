@@ -8,9 +8,9 @@ export type Fold = <Reason, Value1, Result>(
 export const getFold = ({
   noneChecker,
   getReason,
-  getValue
+  getValue,
 }: Helpers): Fold => {
-  const fold: Fold = (onReason, onValue) => option => {
+  const fold: Fold = (onReason, onValue) => (option) => {
     return (
       (noneChecker(option) && onReason(getReason(option))) ||
       onValue(getValue(option))

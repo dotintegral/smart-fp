@@ -60,19 +60,19 @@ export interface Helpers {
   isNone: IsNone;
 }
 
-export const defaultValidator: ValueValidator = v => {
+export const defaultValidator: ValueValidator = (v) => {
   return v !== undefined && v !== null;
 };
 
 export const getHelpers = (validator: ValueValidator): Helpers => {
-  const none: NoneCreator = reason => ({
+  const none: NoneCreator = (reason) => ({
     _type: 'option',
-    _reason: reason || null
+    _reason: reason || null,
   });
 
-  const some: SomeCreator = value => ({
+  const some: SomeCreator = (value) => ({
     _type: 'option',
-    _value: value
+    _value: value,
   });
 
   const noneChecker: NoneChecker = <Reason, Value>(
@@ -142,6 +142,6 @@ export const getHelpers = (validator: ValueValidator): Helpers => {
     getValue,
     create,
     isSome,
-    isNone
+    isNone,
   };
 };
