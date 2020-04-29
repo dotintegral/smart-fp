@@ -48,68 +48,68 @@ export const getCombine = ({
     o4?: Option<R4, V4>,
     o5?: Option<R5, V5>,
     o6?: Option<R6, V6>
-  ) => {
+  ): any => {
     if (!o2) {
       if (isNone(o1)) {
-        return none(getReason(o1)) as any;
+        return none(getReason(o1));
       }
       return some([getValue(o1)]);
     }
 
     if (!o3) {
       if (isNone(o1)) {
-        return none(getReason(o1)) as any;
+        return none(getReason(o1));
       }
       if (isNone(o2)) {
-        return none(getReason(o2)) as any;
+        return none(getReason(o2));
       }
       return some([getValue(o1), getValue(o2)]);
     }
 
     if (!o4) {
       if (isNone(o1)) {
-        return none(getReason(o1)) as any;
+        return none(getReason(o1));
       }
       if (isNone(o2)) {
-        return none(getReason(o2)) as any;
+        return none(getReason(o2));
       }
       if (isNone(o3)) {
-        return none(getReason(o3)) as any;
+        return none(getReason(o3));
       }
       return some([getValue(o1), getValue(o2), getValue(o3)]);
     }
 
     if (!o5) {
       if (isNone(o1)) {
-        return none(getReason(o1)) as any;
+        return none(getReason(o1));
       }
       if (isNone(o2)) {
-        return none(getReason(o2)) as any;
+        return none(getReason(o2));
       }
       if (isNone(o3)) {
-        return none(getReason(o3)) as any;
+        return none(getReason(o3));
       }
       if (isNone(o4)) {
-        return none(getReason(o4)) as any;
+        return none(getReason(o4));
       }
       return some([getValue(o1), getValue(o2), getValue(o3), getValue(o4)]);
     }
 
     if (!o6) {
       if (isNone(o1)) {
-        return none(getReason(o1)) as any;
+        return none(getReason(o1));
       }
       if (isNone(o2)) {
-        return none(getReason(o2)) as any;
+        return none(getReason(o2));
       }
       if (isNone(o3)) {
-        return none(getReason(o3)) as any;
+        return none(getReason(o3));
       }
       if (isNone(o4)) {
-        return none(getReason(o4)) as any;
+        return none(getReason(o4));
       }
       if (isNone(o5)) {
-        return none(getReason(o5)) as any;
+        return none(getReason(o5));
       }
       return some([
         getValue(o1),
@@ -121,22 +121,22 @@ export const getCombine = ({
     }
 
     if (isNone(o1)) {
-      return none(getReason(o1)) as any;
+      return none(getReason(o1));
     }
     if (isNone(o2)) {
-      return none(getReason(o2)) as any;
+      return none(getReason(o2));
     }
     if (isNone(o3)) {
-      return none(getReason(o3)) as any;
+      return none(getReason(o3));
     }
     if (isNone(o4)) {
-      return none(getReason(o4)) as any;
+      return none(getReason(o4));
     }
     if (isNone(o5)) {
-      return none(getReason(o5)) as any;
+      return none(getReason(o5));
     }
     if (isNone(o6)) {
-      return none(getReason(o6)) as any;
+      return none(getReason(o6));
     }
     return some([
       getValue(o1),
