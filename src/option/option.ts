@@ -12,6 +12,7 @@ import { getBitap } from './operators/bitap';
 import { getTapReason } from './operators/tapReason';
 import { getFlatten } from './operators/flatten';
 import { getCombine } from './operators/combine';
+import { getChain } from './operators/chain';
 
 export { ValueValidator, None, Some, Option } from './helpers';
 
@@ -23,6 +24,7 @@ export const createOption = (validator: ValueValidator) => {
     none: helpers.none,
     some: helpers.some,
     create: helpers.create,
+    combine: getCombine(helpers),
 
     // helpers
     isSome: helpers.isSome,
@@ -41,7 +43,7 @@ export const createOption = (validator: ValueValidator) => {
     bitap: getBitap(helpers),
     tapReason: getTapReason(helpers),
     flatten: getFlatten(helpers),
-    combine: getCombine(helpers),
+    chain: getChain(helpers),
   };
 
   return defaultOption;
