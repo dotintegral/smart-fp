@@ -13,6 +13,7 @@ import { getTapReason } from './operators/tapReason';
 import { getFlatten } from './operators/flatten';
 import { getCombine } from './operators/combine';
 import { getChain } from './operators/chain';
+import { getCombineWith } from './operators/combineWith';
 
 export { ValueValidator, None, Some, Option } from './helpers';
 
@@ -44,6 +45,7 @@ export const createOption = (validator: ValueValidator) => {
     tapReason: getTapReason(helpers),
     flatten: getFlatten(helpers),
     chain: getChain(helpers),
+    combineWith: getCombineWith(helpers),
   };
 
   return defaultOption;
