@@ -22,7 +22,7 @@ const users = [
 
 const siteConfig = {
   title: 'Smart FP', // Title for your website.
-  tagline: 'The smartest functiona programming in JavaScript/TypeScript',
+  tagline: 'The smartest functional programming for JavaScript/TypeScript',
   url: 'https://your-docusaurus-test-site.com', // Your website URL
   baseUrl: '/', // Base URL for your project */
   // For github.io type URLs, you would set the url and baseUrl like:
@@ -53,8 +53,8 @@ const siteConfig = {
 
   /* Colors for website */
   colors: {
-    primaryColor: '#8c7543',
-    secondaryColor: '#62512e',
+    primaryColor: '#ff5722',
+    secondaryColor: '#e64a19',
   },
 
   /* Custom fonts for website */
