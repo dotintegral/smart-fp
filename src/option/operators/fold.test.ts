@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import { pipe } from '../../pipe/pipe';
 import option from '../option';
 

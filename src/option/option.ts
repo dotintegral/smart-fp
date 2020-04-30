@@ -15,6 +15,7 @@ import { getCombine } from './operators/combine';
 import { getChain } from './operators/chain';
 import { getCombineWith } from './operators/combineWith';
 import { getGetOrElse } from './operators/getOrElse';
+import { getReduce } from './operators/reduce';
 
 export { ValueValidator, None, Some, Option } from './helpers';
 
@@ -50,6 +51,7 @@ export const createOption = (validator: ValueValidator) => {
     // extractors
     fold: getFold(helpers),
     getOrElse: getGetOrElse(helpers),
+    reduce: getReduce(helpers),
   };
 
   return defaultOption;
