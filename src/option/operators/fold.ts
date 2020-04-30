@@ -1,9 +1,9 @@
 import { Option, Helpers } from '../helpers';
 
-export type Fold = <Reason, Value1, Result>(
+export type Fold = <Reason, Value, Result>(
   onReason: (e: Reason | null) => Result,
-  onValue: (a: Value1) => Result
-) => (option: Option<Reason, Value1>) => Result;
+  onValue: (a: Value) => Result
+) => (option: Option<Reason, Value>) => Result;
 
 export const getFold = ({
   noneChecker,
