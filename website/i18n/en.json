@@ -3,23 +3,33 @@
   "localized-strings": {
     "next": "Next",
     "previous": "Previous",
-    "tagline": "The smartest functiona programming in JavaScript/TypeScript",
+    "tagline": "The smartest functional programming for JavaScript/TypeScript",
     "docs": {
-      "doc1": {
-        "title": "Latin-ish",
-        "sidebar_label": "Example Page"
-      },
       "doc2": {
         "title": "document number 2"
       },
       "doc3": {
         "title": "This is document number 3"
       },
+      "doc32": {
+        "title": "This is document number 3.2"
+      },
       "doc4": {
         "title": "Other Document"
       },
       "doc5": {
         "title": "Fifth Document"
+      },
+      "intro": {
+        "title": "Introduction",
+        "sidebar_label": "Example Page"
+      },
+      "option-api": {
+        "title": "API"
+      },
+      "option-intro": {
+        "title": "Option Introduction",
+        "sidebar_label": "Introduction"
       }
     },
     "links": {
@@ -28,9 +38,11 @@
       "Help": "Help"
     },
     "categories": {
-      "Docusaurus": "Docusaurus",
-      "First Category": "First Category",
-      "Second Category": "Second Category"
+      "Introduction": "Introduction",
+      "Option": "Option",
+      "Second Category": "Second Category",
+      "Second Category #2": "Second Category #2",
+      "First Category": "First Category"
     }
   },
   "pages-strings": {

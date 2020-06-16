@@ -25,3 +25,12 @@
 .fixedHeaderContainer {
   background: #424242;
 }
+
+.projectTitle small {
+  color: #424242;
+}
+
+code {
+  color: #abb2bf;
+  background: #282c34;
+}

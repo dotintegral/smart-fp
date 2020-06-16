@@ -1,6 +1,6 @@
 ---
-id: doc1
-title: Latin-ish
+id: intro
+title: Introduction 
 sidebar_label: Example Page
 ---
 
