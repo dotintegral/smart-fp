@@ -16,6 +16,7 @@ import { getChain } from './operators/chain';
 import { getCombineWith } from './operators/combineWith';
 import { getGetOrElse } from './operators/getOrElse';
 import { getReduce } from './operators/reduce';
+import { getMultiMap } from './operators/multiMap';
 
 export { ValueValidator, None, Some, Option } from './helpers';
 
@@ -47,6 +48,7 @@ export const createOption = (validator: ValueValidator) => {
     flatten: getFlatten(helpers),
     chain: getChain(helpers),
     combineWith: getCombineWith(helpers),
+    multiMap: getMultiMap(helpers),
 
     // extractors
     fold: getFold(helpers),
